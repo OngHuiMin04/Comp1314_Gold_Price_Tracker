@@ -195,3 +195,4 @@ echo "Data files location: $DATA_DIR"
 echo "Log file: $LOG_FILE"
 log_message "Gold price tracker completed successfully"
 
+
