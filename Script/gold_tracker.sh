@@ -9,8 +9,12 @@ CURRENCIES=("USD" "EUR" "GBP" "AUD" "CNY")
 DATA_DIR="./gold_data"
 LOG_FILE="$DATA_DIR/gold_tracker.log"
 
+# Create data directory if it doesn't exist
 mkdir -p "$DATA_DIR"
 
+# ----------------------------
+# Logging function
+# ----------------------------
 log_message() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"
     echo "$1"
