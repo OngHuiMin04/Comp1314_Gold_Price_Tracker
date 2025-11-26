@@ -1,177 +1,164 @@
 #!/bin/bash
 # ============================
-# GOLD PRICE TRACKER
+# GOLD PRICE TRACKER (RAW HTML)
 # ============================
 
-# ----------------------------
-# Configuration
-# ----------------------------
 PAGE="https://www.kitco.com/charts/gold"
+RAW_FILE="/mnt/c/Users/Amanda Ong/Documents/GitHub/Comp1314_Gold_Price_Tracker/HTML/raw.html"
 CURRENCIES=("USD" "EUR" "GBP" "AUD" "CNY")
 DATA_DIR="./gold_data"
 LOG_FILE="$DATA_DIR/gold_tracker.log"
 
-# Create data directory if it doesn't exist
 mkdir -p "$DATA_DIR"
 
-# ----------------------------
-# Logging function
-# ----------------------------
 log_message() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"
     echo "$1"
 }
 
 # ----------------------------
-# Display currency data
+# Display result
 # ----------------------------
 display_currency_data() {
     local currency=$1
     local timestamp=$2
     local bid_price=$3
     local ask_price=$4
-    local ask_high=$5
-    local ask_low=$6
-
-    # Units conversion
-    local ounce=$(printf "%.2f" "$bid_price")
-    local gram=$(printf "%.2f" "$(echo "scale=4; $bid_price / 31.1034768" | bc)")
-    local kilo=$(printf "%.2f" "$(echo "scale=4; $bid_price * 32.1507466" | bc)")
-    local pennyweight=$(printf "%.2f" "$(echo "scale=4; $bid_price / 20" | bc)")
-    local tola=$(printf "%.2f" "$(echo "scale=4; $bid_price * 0.375" | bc)")
-    local tael=$(printf "%.2f" "$(echo "scale=4; $bid_price * 1.20337" | bc)")
+    local high_price=$5
+    local low_price=$6
 
     echo "=========================================="
     echo " GOLD PRICE - $currency"
     echo "=========================================="
-    printf "%-15s : %s\n" "Bid Price"      "$bid_price"
-    printf "%-15s : %s\n" "Ask Price"      "$ask_price"
-    printf "%-15s : %s\n" "Ask High Price" "$ask_high"
-    printf "%-15s : %s\n" "Ask Low Price"  "$ask_low"
-    echo "--- Units ---"
-    printf "%-15s : %s\n" "Ounce"    "$ounce"
-    printf "%-15s : %s\n" "Gram"     "$gram"
-    printf "%-15s : %s\n" "Kilo"     "$kilo"
-    printf "%-15s : %s\n" "Pennyweight" "$pennyweight"
-    printf "%-15s : %s\n" "Tola"     "$tola"
-    printf "%-15s : %s\n" "Tael"     "$tael"
-    printf "%-15s : %s\n" "Data Time" "$timestamp"
-    printf "%-15s : %s\n" "Script Run" "$(TZ="Asia/Kuala_Lumpur" date '+%Y-%m-%d %H:%M:%S %Z')"
+    printf "%-18s : %s\n" "Bid Price"     "$bid_price"
+    printf "%-18s : %s\n" "Ask Price"     "$ask_price"
+    printf "%-18s : %s\n" "High Price"    "$high_price"
+    printf "%-18s : %s\n" "Low Price"     "$low_price"
+    echo "--- Price Per Unit ---"
+    printf "%-18s : %s\n" "Ounce"       "$unit_ounce"
+    printf "%-18s : %s\n" "Gram"        "$unit_gram"
+    printf "%-18s : %s\n" "Kilo"        "$unit_kilo"
+    printf "%-18s : %s\n" "Pennyweight" "$unit_pennyweight"
+    printf "%-18s : %s\n" "Tola"        "$unit_tola"
+    printf "%-18s : %s\n" "Tael"        "$unit_tael"
+    printf "%-18s : %s\n" "Data Time"   "$timestamp"
+    printf "%-18s : %s\n" "Script Run"  "$(TZ="Asia/Kuala_Lumpur" date '+%Y-%m-%d %H:%M:%S')"
     echo "------------------------------------------"
 }
 
 # ----------------------------
-# Save data to CSV file
+# Save CSV
 # ----------------------------
 save_to_file() {
     local currency=$1
     local timestamp=$2
     local bid_price=$3
     local ask_price=$4
-    local ask_high=$5
-    local ask_low=$6
+    local high_price=$5
+    local low_price=$6
 
-    local data_file="$DATA_DIR/${currency}_gold_prices.csv"
+    local file="$DATA_DIR/${currency}_gold_prices.csv"
 
-    if [ ! -f "$data_file" ]; then
-        echo "timestamp,bid_price,ask_price,ask_high,ask_low,script_run_time" > "$data_file"
+    if [ ! -f "$file" ]; then
+        echo "timestamp,bid_price,ask_price,high_price,low_price,script_run_time" > "$file"
     fi
 
-    echo "$timestamp,$bid_price,$ask_price,$ask_high,$ask_low,$(TZ="Asia/Kuala_Lumpur" date '+%Y-%m-%d %H:%M:%S %Z')" >> "$data_file"
-
-    log_message "Data saved for $currency: $bid_price / $ask_price"
-    echo ""
+    echo "$timestamp,$bid_price,$ask_price,$high_price,$low_price,$(TZ="Asia/Kuala_Lumpur" date '+%Y-%m-%d %H:%M:%S')" >> "$file"
 }
 
 # ----------------------------
-# Start tracking
+# Start Tracking
 # ----------------------------
-log_message "Starting gold price tracker..."
-
-# Fetch the webpage
-if curl --head --silent --fail "$PAGE" > /dev/null; then
-    rawdata=$(curl -s "$PAGE")
-else
-    echo "Website is not reachable at the moment"
-    log_message "ERROR: Website is not reachable"
-    exit 1
-fi
+log_message "Starting gold tracker..."
+curl -s "$PAGE" > raw.html
+rawdata=$(cat raw.html)
 
 # ----------------------------
-# Extract base USD price
+# Extract BID & ASK
 # ----------------------------
-base_price=$(echo "$rawdata" | awk -F'<div class="mb-2 text-right">' '{print $2}' | awk -F'>' '{print $2}' | awk -F'<' '{print $1}' | tr -d '\n' | tr -d ',')
+bid_usd=$(grep -oP '<h3[^>]*>\K[0-9,]+\.[0-9]+' raw.html | head -1 | tr -d ',')
+ask_usd=$(grep -oP 'text-\[19px\] font-normal">\K[0-9,]+\.[0-9]+' raw.html | head -1 | tr -d ',')
 
-if [ -z "$base_price" ] || [ "$base_price" = "0.00" ]; then
-    base_price=$(echo "$rawdata" | grep -oP '[0-9]{1,4},?[0-9]*\.[0-9]{2}' | head -1 | tr -d ',')
-fi
-
-if [ -z "$base_price" ] || [ "$base_price" = "0.00" ]; then
-    echo "ERROR: Could not extract gold price"
-    log_message "ERROR: Could not extract gold price"
-    exit 1
-fi
-
-log_message "Successfully extracted base USD gold price: $base_price"
+bid_usd=$(printf "%.2f" "$bid_usd")
+ask_usd=$(printf "%.2f" "$ask_usd")
 
 # ----------------------------
-# Timestamp
+# Extract HIGH & LOW
 # ----------------------------
+low_usd=$(grep -oP 'CommodityPrice_priceToday__wBwVD"><div>\K[0-9,]+\.[0-9]+' raw.html | head -1 | tr -d ',')
+high_usd=$(grep -oP 'CommodityPrice_priceToday__wBwVD"><div>[0-9,]+\.[0-9]+</div><div>\K[0-9,]+\.[0-9]+' raw.html | head -1 | tr -d ',')
+
+low_usd=$(printf "%.2f" "$low_usd")
+high_usd=$(printf "%.2f" "$high_usd")
+
+# ----------------------------
+# Extract UNIT PRICES (USD)
+# ----------------------------
+extract_unit_price() {
+    grep -oP "<p class=\"CommodityPrice_priceName__Ehicd capitalize\">$1</p><p class=\"CommodityPrice_convertPrice__5Addh ml-auto justify-self-end\">\K[0-9,]+\.[0-9]+" raw.html \
+        | head -1 | tr -d ','
+}
+
+unit_ounce_usd=$(extract_unit_price "ounce")
+unit_gram_usd=$(extract_unit_price "gram")
+unit_kilo_usd=$(extract_unit_price "Kilo")
+unit_pennyweight_usd=$(extract_unit_price "pennyweight")
+unit_tola_usd=$(extract_unit_price "tola")
+unit_tael_usd=$(extract_unit_price "tael")
+
+unit_ounce_usd=$(printf "%.2f" "$unit_ounce_usd")
+unit_gram_usd=$(printf "%.2f" "$unit_gram_usd")
+unit_kilo_usd=$(printf "%.2f" "$unit_kilo_usd")
+unit_pennyweight_usd=$(printf "%.2f" "$unit_pennyweight_usd")
+unit_tola_usd=$(printf "%.2f" "$unit_tola_usd")
+unit_tael_usd=$(printf "%.2f" "$unit_tael_usd")
+
+# ----------------------------
+# Extract Currency Rates (usdtoc)
+# ----------------------------
+extract_rate() {
+    grep -oP "\"$1\"[^}]*\"usdtoc\":\K[0-9]+\.[0-9]+" raw.html | head -1
+}
+
+rate_USD=1
+rate_EUR=$(extract_rate "EUR")
+rate_GBP=$(extract_rate "GBP")
+rate_AUD=$(extract_rate "AUD")
+rate_CNY=$(extract_rate "CNY")
+
 timestamp=$(TZ="America/New_York" date '+%b %d, %Y at %I:%M %p %Z')
-
-echo "GOLD PRICE TRACKER"
-echo "=================="
-echo "Tracking: ${CURRENCIES[*]}"
-echo "Base USD Price: $base_price"
-echo ""
 
 # ----------------------------
 # Process each currency
 # ----------------------------
 for currency in "${CURRENCIES[@]}"; do
-    log_message "Processing $currency..."
 
-    if [ "$currency" != "USD" ]; then
-        exchange_rate=$(echo "$rawdata" | awk -F"$currency" '{print $2}' | awk -F'"bid":' '{print $2}' | awk -F',"' '{print $1}' | tr -d '\n')
-        if [ -z "$exchange_rate" ] || [ "$exchange_rate" = "0.00" ]; then
-            exchange_rate=$(echo "$rawdata" | grep -oP "\"$currency\"[^}]*\"bid\":[0-9]+\.[0-9]+" | awk -F'"bid":' '{print $2}' | head -1)
-        fi
-        if [ -z "$exchange_rate" ] || [ "$exchange_rate" = "0.00" ]; then
-            log_message "ERROR: Could not extract exchange rate for $currency - skipping"
-            echo ""
-            continue
-        fi
+    case $currency in
+        "USD") rate=1 ;;
+        "EUR") rate=$rate_EUR ;;
+        "GBP") rate=$rate_GBP ;;
+        "AUD") rate=$rate_AUD ;;
+        "CNY") rate=$rate_CNY ;;
+    esac
 
-        bid_price=$(echo "$base_price * $exchange_rate" | bc)
-        bid_price=$(printf "%.2f" "$bid_price")
-    else
-        bid_price="$base_price"
-    fi
+    # Correct conversion (USD → Currency)
+    bid_price=$(printf "%.2f" "$(echo "$bid_usd / $rate" | bc -l)")
+    ask_price=$(printf "%.2f" "$(echo "$ask_usd / $rate" | bc -l)")
+    high_price=$(printf "%.2f" "$(echo "$high_usd / $rate" | bc -l)")
+    low_price=$(printf "%.2f" "$(echo "$low_usd / $rate" | bc -l)")
 
-    ask_price=$(echo "$bid_price + 2.00" | bc)
+    # Units conversion
+    unit_ounce=$(printf "%.2f" "$(echo "$unit_ounce_usd / $rate" | bc -l)")
+    unit_gram=$(printf "%.2f" "$(echo "$unit_gram_usd / $rate" | bc -l)")
+    unit_kilo=$(printf "%.2f" "$(echo "$unit_kilo_usd / $rate" | bc -l)")
+    unit_pennyweight=$(printf "%.2f" "$(echo "$unit_pennyweight_usd / $rate" | bc -l)")
+    unit_tola=$(printf "%.2f" "$(echo "$unit_tola_usd / $rate" | bc -l)")
+    unit_tael=$(printf "%.2f" "$(echo "$unit_tael_usd / $rate" | bc -l)")
 
-    # ----------------------------
-    # Ask high/low tracking
-    # ----------------------------
-    data_file="$DATA_DIR/${currency}_gold_prices.csv"
-    if [ -f "$data_file" ]; then
-        prev_ask_high=$(awk -F',' 'NR>1 {print $4}' "$data_file" | sort -nr | head -1)
-        prev_ask_low=$(awk -F',' 'NR>1 {print $5}' "$data_file" | sort -n | head -1)
+    display_currency_data "$currency" "$timestamp" "$bid_price" "$ask_price" "$high_price" "$low_price"
+    save_to_file "$currency" "$timestamp" "$bid_price" "$ask_price" "$high_price" "$low_price"
 
-        ask_high_price=$(awk -v ask="$ask_price" -v prev="$prev_ask_high" 'BEGIN{if(ask>prev) print ask; else print prev}')
-        ask_low_price=$(awk -v ask="$ask_price" -v prev="$prev_ask_low" 'BEGIN{if(ask<prev) print ask; else print prev}')
-    else
-        ask_high_price="$ask_price"
-        ask_low_price="$ask_price"
-    fi
-
-    # ----------------------------
-    # Display & Save
-    # ----------------------------
-    display_currency_data "$currency" "$timestamp" "$bid_price" "$ask_price" "$ask_high_price" "$ask_low_price"
-    save_to_file "$currency" "$timestamp" "$bid_price" "$ask_price" "$ask_high_price" "$ask_low_price"
-
-    sleep 2
+    sleep 1
 done
 
 # ----------------------------
@@ -181,18 +168,14 @@ echo ""
 echo "SUMMARY REPORT"
 echo "=============="
 for currency in "${CURRENCIES[@]}"; do
-    data_file="$DATA_DIR/${currency}_gold_prices.csv"
-    if [ -f "$data_file" ]; then
-        record_count=$(($(wc -l < "$data_file") - 1))
-        echo "$currency: $record_count records stored"
+    file="$DATA_DIR/${currency}_gold_prices.csv"
+    if [ -f "$file" ]; then
+        count=$(($(wc -l < "$file") - 1))
+        echo "$currency: $count records"
     else
-        echo "$currency: No data file"
+        echo "$currency: No data"
     fi
 done
 
-echo ""
-echo "Data files location: $DATA_DIR"
-echo "Log file: $LOG_FILE"
 log_message "Gold price tracker completed successfully"
-
 
