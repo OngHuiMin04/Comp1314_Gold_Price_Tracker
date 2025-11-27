@@ -1,3 +1,3 @@
-timestamp,bid_price,ask_price,high_price,low_price,script_run_time
-Nov 26, 2025 at 03:00 AM EST,4157.20,4159.20,4170.40,4129.10,2025-11-26 16:00:50
-Nov 26, 2025 at 03:01 AM EST,4157.20,4159.20,4170.40,4129.10,2025-11-26 16:01:13
+timestamp,currency,usdtoc_rate,bid_price,ask_price,high_price,low_price,unit_ounce,unit_gram,unit_kilo,unit_pennyweight,unit_tola,unit_tael,script_run_time
+Nov 26, 2025 at 11:44 PM EST,USD,1,4151.90,4153.90,4169.80,4142.20,4151.90,133.49,133488.73,207.60,1556.96,5045.71,2025-11-27 12:44:40
+Nov 26, 2025 at 11:45 PM EST,USD,1,4151.00,4153.00,4169.80,4142.20,4151.00,133.46,133459.79,207.55,1556.63,5044.62,2025-11-27 12:45:00
