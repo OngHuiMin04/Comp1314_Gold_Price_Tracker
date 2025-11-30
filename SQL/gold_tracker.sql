@@ -8,6 +8,7 @@ USE goldtracker;
 CREATE TABLE IF NOT EXISTS currencies (
     id INT AUTO_INCREMENT PRIMARY KEY,
     code VARCHAR(10) NOT NULL UNIQUE
+    ctousd DECIMAL(18,8), 
 );
 
 
@@ -23,8 +24,6 @@ CREATE TABLE IF NOT EXISTS gold_prices (
     ask_price DECIMAL(10,2),
     high_price DECIMAL(10,2),
     low_price DECIMAL(10,2),
-
-    ctousd DECIMAL(18,8),    -- matches your script
 
     FOREIGN KEY (currency_id) REFERENCES currencies(id)
         ON DELETE CASCADE
