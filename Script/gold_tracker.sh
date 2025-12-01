@@ -20,7 +20,7 @@ log_message() {
 }
 
 # ----------------------------
-# Display output (NO USDTOC shown)
+# Display output
 # ----------------------------
 display_currency_data() {
     local currency=$1
@@ -59,7 +59,7 @@ display_currency_data() {
 }
 
 # ----------------------------
-# Save CSV (INCLUDES USDTOC ONLY)
+# Save CSV
 # ----------------------------
 save_to_file() {
     local currency=$1
@@ -86,10 +86,21 @@ save_to_file() {
 }
 
 # ----------------------------
-# Start
+# Start Script
 # ----------------------------
 log_message "Starting gold tracker..."
-curl -s -H "User-Agent: Mozilla/5.0" "$PAGE" > "$RAW_FILE"
+
+# CHECK 1: Internet
+if ! curl -s --head https://www.google.com/ > /dev/null; then
+    log_message "ERROR: No internet connection."
+    exit 1
+fi
+
+# CHECK 2: Kitco reachable
+if ! curl -s -H "User-Agent: Mozilla/5.0" "$PAGE" -o "$RAW_FILE"; then
+    log_message "ERROR: Unable to reach Kitco."
+    exit 1
+fi
 
 # ----------------------------
 # Extract BID & ASK
@@ -97,12 +108,15 @@ curl -s -H "User-Agent: Mozilla/5.0" "$PAGE" > "$RAW_FILE"
 bid_usd=$(grep -oP '<h3[^>]*>\K[0-9,]+\.[0-9]+' "$RAW_FILE" | head -1 | tr -d ',')
 ask_usd=$(grep -oP 'text-\[19px\] font-normal">\K[0-9,]+\.[0-9]+' "$RAW_FILE" | head -1 | tr -d ',')
 
+if [ -z "$bid_usd" ] || [ -z "$ask_usd" ]; then
+    log_message "ERROR: Failed to parse gold data — HTML structure changed."
+    exit 1
+fi
+
 bid_usd=$(printf "%.2f" "$bid_usd")
 ask_usd=$(printf "%.2f" "$ask_usd")
 
-# ----------------------------
 # Extract HIGH & LOW
-# ----------------------------
 low_usd=$(grep -oP 'CommodityPrice_priceToday__wBwVD"><div>\K[0-9,]+\.[0-9]+' "$RAW_FILE" | head -1 | tr -d ',')
 high_usd=$(grep -oP 'CommodityPrice_priceToday__wBwVD"><div>[0-9,]+\.[0-9]+</div><div>\K[0-9,]+\.[0-9]+' "$RAW_FILE" | head -1 | tr -d ',')
 
@@ -132,7 +146,7 @@ unit_tola_usd=$(printf "%.2f" "$unit_tola_usd")
 unit_tael_usd=$(printf "%.2f" "$unit_tael_usd")
 
 # ----------------------------
-# Extract USDTOC & CTOUSD
+# Extract conversion rates
 # ----------------------------
 extract_usdtoc() {
     grep -oP "\"$1\"[^}]*\"usdtoc\":\K[0-9]+\.[0-9]+" "$RAW_FILE" | head -1
@@ -154,28 +168,29 @@ ctousd_GBP=$(extract_ctousd "GBP")
 ctousd_AUD=$(extract_ctousd "AUD")
 ctousd_CNY=$(extract_ctousd "CNY")
 
-timestamp=$(TZ="America/New_York" date '+%b %d, %Y at %I:%M %p %Z')
+# ============================
+# FIXED TIMESTAMP (NO COMMAS)
+# ============================
+timestamp=$(TZ="America/New_York" date '+%Y-%m-%d %H:%M:%S %Z')
 
 # ----------------------------
-# Process each currency
+# Process all currencies
 # ----------------------------
 for currency in "${CURRENCIES[@]}"; do
 
     case $currency in
-        "USD") rate=1;        ctousd=1 ;;
+        "USD") rate=1;         ctousd=1 ;;
         "EUR") rate=$rate_EUR; ctousd=$ctousd_EUR ;;
         "GBP") rate=$rate_GBP; ctousd=$ctousd_GBP ;;
         "AUD") rate=$rate_AUD; ctousd=$ctousd_AUD ;;
         "CNY") rate=$rate_CNY; ctousd=$ctousd_CNY ;;
     esac
 
-    # Convert prices
     bid_price=$(printf "%.2f" "$(echo "$bid_usd / $rate" | bc -l)")
     ask_price=$(printf "%.2f" "$(echo "$ask_usd / $rate" | bc -l)")
     high_price=$(printf "%.2f" "$(echo "$high_usd / $rate" | bc -l)")
     low_price=$(printf "%.2f" "$(echo "$low_usd / $rate" | bc -l)")
 
-    # Convert units
     unit_ounce=$(printf "%.2f" "$(echo "$unit_ounce_usd / $rate" | bc -l)")
     unit_gram=$(printf "%.2f" "$(echo "$unit_gram_usd / $rate" | bc -l)")
     unit_kilo=$(printf "%.2f" "$(echo "$unit_kilo_usd / $rate" | bc -l)")
@@ -183,20 +198,15 @@ for currency in "${CURRENCIES[@]}"; do
     unit_tola=$(printf "%.2f" "$(echo "$unit_tola_usd / $rate" | bc -l)")
     unit_tael=$(printf "%.2f" "$(echo "$unit_tael_usd / $rate" | bc -l)")
 
-    # Display output (NO USDTOC shown)
     display_currency_data "$currency" "$timestamp" "$ctousd" "$bid_price" "$ask_price" "$high_price" "$low_price" \
         "$unit_ounce" "$unit_gram" "$unit_kilo" "$unit_pennyweight" "$unit_tola" "$unit_tael"
 
-    # Save CSV (YES USDTOC saved)
     save_to_file "$currency" "$timestamp" "$ctousd" "$bid_price" "$ask_price" "$high_price" "$low_price" \
         "$unit_ounce" "$unit_gram" "$unit_kilo" "$unit_pennyweight" "$unit_tola" "$unit_tael"
 
     sleep 1
 done
 
-# ----------------------------
-# Summary
-# ----------------------------
 echo ""
 echo "SUMMARY REPORT"
 echo "=============="
