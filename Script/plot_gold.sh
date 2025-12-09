@@ -1,129 +1,84 @@
 #!/bin/bash
-
-# =====================================================
-# GOLD PLOT SCRIPT (FINAL VERSION)
-# =====================================================
-
 DB="goldtracker"
 DB_USER="root"
-DB_PASS=""   # Leave empty if no password
-
 PLOT_DIR="./plots"
+LOG_DIR="./log"
+SQL_DIR="./sql_queries"
+
 mkdir -p "$PLOT_DIR"
+mkdir -p "$LOG_DIR"
+mkdir -p "$SQL_DIR"
+
+CURRENCIES=("USD" "EUR" "GBP" "AUD" "CNY")
 
 # =====================================================
-# EXPORT SQL DATA TO TEXT FILES
+# 1. Create SQL files + LOG dump for every currency
 # =====================================================
-export_data() {
-    CURR=$1
-    OUTFILE="$PLOT_DIR/${CURR}_sql_data.txt"
+make_sql_file() {
+    local C="$1"
+    local SQLFILE="$SQL_DIR/${C}.sql"
+    local LOGFILE="$LOG_DIR/${C}.dat"
 
-    echo "Exporting $CURR data to $OUTFILE ..."
-
-    mysql -u "$DB_USER" -p"$DB_PASS" -D "$DB" -e "
-        SELECT
-            gp.gold_prices_id,
-            gp.price_timestamp_ny,
-            gp.script_timestamp_my,
-            gp.bid_price,
-            gp.ask_price,
-            gp.high_price,
-            gp.low_price
-        FROM gold_prices gp
-        JOIN currencies c ON gp.currency_id = c.currencies_id
-        WHERE c.currency_name = '$CURR'
-        ORDER BY gp.gold_prices_id;
-    " > "$OUTFILE"
-}
-
-# Export all currencies
-export_all() {
-    for CURR in USD EUR GBP AUD CNY; do
-        export_data "$CURR"
-    done
-}
-
-# =====================================================
-# COMMON GNUPLOT SETTINGS
-# =====================================================
-COMMON_SETTINGS="
-set terminal png size 1600,900
-set datafile separator whitespace
-set key autotitle columnhead
-set style data lines
-set grid
-"
-
-# =====================================================
-# PLOT BID/ASK/HIGH/LOW FOR A CURRENCY
-# =====================================================
-plot_currency() {
-    CURR=$1
-    INPUT="$PLOT_DIR/${CURR}_sql_data.txt"
-    OUTPUT="$PLOT_DIR/${CURR}_price_plot.png"
-
-    echo "Plotting $CURR → $OUTPUT"
-
-gnuplot <<EOF
-$COMMON_SETTINGS
-set output "$OUTPUT"
-set title "$CURR Gold Price (From MySQL)"
-set xlabel "Record Index"
-set ylabel "Price"
-
-plot \
-    "$INPUT" using 1:4 with lines lw 2 title "Bid", \
-    "$INPUT" using 1:5 with lines lw 2 title "Ask", \
-    "$INPUT" using 1:6 with lines lw 2 title "High", \
-    "$INPUT" using 1:7 with lines lw 2 title "Low"
+    cat > "$SQLFILE" <<EOF
+SELECT gp.price_timestamp_ny,
+       gp.bid_price,
+       gp.ask_price,
+       gp.high_price,
+       gp.low_price
+FROM gold_prices gp
+JOIN currencies c
+    ON gp.currency_id = c.currencies_id
+WHERE c.currency_name = '$C'
+ORDER BY gp.price_timestamp_ny;
 EOF
+
+    # dump SQL output to log file
+    mysql -u "$DB_USER" -D "$DB" -N < "$SQLFILE" > "$LOGFILE"
 }
 
-# =====================================================
-# PLOT ALL CURRENCIES TOGETHER (BID ONLY)
-# =====================================================
-plot_all_bid() {
-    OUT="$PLOT_DIR/all_currency_bid_price.png"
-
-    echo "Plotting ALL → $OUT"
-
-gnuplot <<EOF
-$COMMON_SETTINGS
-set output "$OUT"
-set title "All Currencies - Bid Price Comparison"
-set xlabel "Record Index"
-set ylabel "Bid Price"
-
-plot \
-    "$PLOT_DIR/USD_sql_data.txt" using 1:4 with lines lw 2 title "USD", \
-    "$PLOT_DIR/EUR_sql_data.txt" using 1:4 with lines lw 2 title "EUR", \
-    "$PLOT_DIR/GBP_sql_data.txt" using 1:4 with lines lw 2 title "GBP", \
-    "$PLOT_DIR/AUD_sql_data.txt" using 1:4 with lines lw 2 title "AUD", \
-    "$PLOT_DIR/CNY_sql_data.txt" using 1:4 with lines lw 2 title "CNY"
-EOF
-}
-
-# =====================================================
-# RUN EVERYTHING
-# =====================================================
-echo "======================================="
-echo " Exporting MySQL Data..."
-echo "======================================="
-export_all
-
-echo "======================================="
-echo " Plotting Each Currency..."
-echo "======================================="
-for CURR in USD EUR GBP AUD CNY; do
-    plot_currency "$CURR"
+# generate SQL + logs
+for C in "${CURRENCIES[@]}"; do
+    make_sql_file "$C"
 done
 
-echo "======================================="
-echo " Plotting ALL Currency Comparison..."
-echo "======================================="
-plot_all_bid
+# =====================================================
+# 2. Generate plots (each plot opens + closes MySQL)
+# =====================================================
+for C in "${CURRENCIES[@]}"; do
 
-echo "======================================="
-echo " Plot Script Completed Successfully!"
-echo "Plots saved in: $PLOT_DIR"
-echo "======================================="
+gnuplot <<EOF
+set terminal png size 1700,900
+set xdata time
+set timefmt "%Y-%m-%d %H:%M:%S"
+set format x "%d-%m\n%H:%M"
+set grid
+set key outside
+set datafile separator "\t"
+
+# ============================
+# BID VS ASK
+# ============================
+set output "${PLOT_DIR}/bid_vs_ask_${C}.png"
+set title "Bid vs Ask - ${C}"
+set xlabel "Timestamp"
+set ylabel "Price"
+
+plot "< mysql -u $DB_USER -D $DB -N < ${SQL_DIR}/${C}.sql" using 1:2 with linespoints lw 2 pt 7 title "${C} Bid", \
+     "< mysql -u $DB_USER -D $DB -N < ${SQL_DIR}/${C}.sql" using 1:3 with linespoints lw 2 pt 7 title "${C} Ask"
+
+# ============================
+# HIGH VS LOW
+# ============================
+set output "${PLOT_DIR}/high_vs_low_${C}.png"
+set title "High vs Low - ${C}"
+set xlabel "Timestamp"
+set ylabel "Price"
+
+plot "< mysql -u $DB_USER -D $DB -N < ${SQL_DIR}/${C}.sql" using 1:4 with linespoints lw 2 pt 7 title "${C} High", \
+     "< mysql -u $DB_USER -D $DB -N < ${SQL_DIR}/${C}.sql" using 1:5 with linespoints lw 2 pt 7 title "${C} Low"
+
+EOF
+
+done
+
+echo "DONE! Logs saved in ./log/ and 10 plots saved in ./plots/"
