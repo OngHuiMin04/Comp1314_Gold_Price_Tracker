@@ -24,18 +24,19 @@ log_message() {
 # ----------------------------
 display_currency_data() {
     local currency=$1
-    local timestamp=$2
-    local ctousd=$3
-    local bid_price=$4
-    local ask_price=$5
-    local high_price=$6
-    local low_price=$7
-    local unit_ounce=$8
-    local unit_gram=$9
-    local unit_kilo=${10}
-    local unit_pennyweight=${11}
-    local unit_tola=${12}
-    local unit_tael=${13}
+    local timestamp_ny=$2
+    local timestamp_my=$3
+    local ctousd=$4
+    local bid_price=$5
+    local ask_price=$6
+    local high_price=$7
+    local low_price=$8
+    local unit_ounce=$9
+    local unit_gram=${10}
+    local unit_kilo=${11}
+    local unit_pennyweight=${12}
+    local unit_tola=${13}
+    local unit_tael=${14}
 
     echo "=========================================="
     echo " GOLD PRICE - $currency"
@@ -53,8 +54,8 @@ display_currency_data() {
     printf "%-18s : %s\n" "Tola"        "$unit_tola"
     printf "%-18s : %s\n" "Tael"        "$unit_tael"
 
-    printf "%-18s : %s\n" "Data Time"   "$timestamp"
-    printf "%-18s : %s\n" "Script Run"  "$(TZ="Asia/Kuala_Lumpur" date '+%Y-%m-%d %H:%M:%S')"
+    printf "%-18s : %s\n" "Data Time"   "$timestamp_ny"
+    printf "%-18s : %s\n" "Script Run"  "$timestamp_my"
     echo "------------------------------------------"
 }
 
@@ -63,26 +64,27 @@ display_currency_data() {
 # ----------------------------
 save_to_file() {
     local currency=$1
-    local timestamp=$2
-    local ctousd=$3
-    local bid_price=$4
-    local ask_price=$5
-    local high_price=$6
-    local low_price=$7
-    local unit_ounce=$8
-    local unit_gram=$9
-    local unit_kilo=${10}
-    local unit_pennyweight=${11}
-    local unit_tola=${12}
-    local unit_tael=${13}
+    local timestamp_ny=$2
+    local timestamp_my=$3
+    local ctousd=$4
+    local bid_price=$5
+    local ask_price=$6
+    local high_price=$7
+    local low_price=$8
+    local unit_ounce=$9
+    local unit_gram=${10}
+    local unit_kilo=${11}
+    local unit_pennyweight=${12}
+    local unit_tola=${13}
+    local unit_tael=${14}
 
     local file="$DATA_DIR/${currency}_gold_prices.csv"
 
     if [ ! -f "$file" ]; then
-        echo "timestamp,currency,usdtoc_rate,bid_price,ask_price,high_price,low_price,unit_ounce,unit_gram,unit_kilo,unit_pennyweight,unit_tola,unit_tael,script_run_time" > "$file"
+        echo "timestamp_ny,script_timestamp_my,currency,ctousd,bid_price,ask_price,high_price,low_price,unit_ounce,unit_gram,unit_kilo,unit_pennyweight,unit_tola,unit_tael" > "$file"
     fi
 
-    echo "$timestamp,$currency,$ctousd,$bid_price,$ask_price,$high_price,$low_price,$unit_ounce,$unit_gram,$unit_kilo,$unit_pennyweight,$unit_tola,$unit_tael,$(TZ=Asia/Kuala_Lumpur date '+%Y-%m-%d %H:%M:%S')" >> "$file"
+    echo "$timestamp_ny,$timestamp_my,$currency,$ctousd,$bid_price,$ask_price,$high_price,$low_price,$unit_ounce,$unit_gram,$unit_kilo,$unit_pennyweight,$unit_tola,$unit_tael" >> "$file"
 }
 
 # ----------------------------
@@ -108,11 +110,6 @@ fi
 bid_usd=$(grep -oP '<h3[^>]*>\K[0-9,]+\.[0-9]+' "$RAW_FILE" | head -1 | tr -d ',')
 ask_usd=$(grep -oP 'text-\[19px\] font-normal">\K[0-9,]+\.[0-9]+' "$RAW_FILE" | head -1 | tr -d ',')
 
-if [ -z "$bid_usd" ] || [ -z "$ask_usd" ]; then
-    log_message "ERROR: Failed to parse gold data — HTML structure changed."
-    exit 1
-fi
-
 bid_usd=$(printf "%.2f" "$bid_usd")
 ask_usd=$(printf "%.2f" "$ask_usd")
 
@@ -131,19 +128,12 @@ extract_unit_price() {
         | head -1 | tr -d ','
 }
 
-unit_ounce_usd=$(extract_unit_price "ounce")
-unit_gram_usd=$(extract_unit_price "gram")
-unit_kilo_usd=$(extract_unit_price "Kilo")
-unit_pennyweight_usd=$(extract_unit_price "pennyweight")
-unit_tola_usd=$(extract_unit_price "tola")
-unit_tael_usd=$(extract_unit_price "tael")
-
-unit_ounce_usd=$(printf "%.2f" "$unit_ounce_usd")
-unit_gram_usd=$(printf "%.2f" "$unit_gram_usd")
-unit_kilo_usd=$(printf "%.2f" "$unit_kilo_usd")
-unit_pennyweight_usd=$(printf "%.2f" "$unit_pennyweight_usd")
-unit_tola_usd=$(printf "%.2f" "$unit_tola_usd")
-unit_tael_usd=$(printf "%.2f" "$unit_tael_usd")
+unit_ounce_usd=$(printf "%.2f" "$(extract_unit_price "ounce")")
+unit_gram_usd=$(printf "%.2f" "$(extract_unit_price "gram")")
+unit_kilo_usd=$(printf "%.2f" "$(extract_unit_price "Kilo")")
+unit_pennyweight_usd=$(printf "%.2f" "$(extract_unit_price "pennyweight")")
+unit_tola_usd=$(printf "%.2f" "$(extract_unit_price "tola")")
+unit_tael_usd=$(printf "%.2f" "$(extract_unit_price "tael")")
 
 # ----------------------------
 # Extract conversion rates
@@ -169,9 +159,10 @@ ctousd_AUD=$(extract_ctousd "AUD")
 ctousd_CNY=$(extract_ctousd "CNY")
 
 # ============================
-# FIXED TIMESTAMP (NO COMMAS)
+# TIMESTAMPS
 # ============================
-timestamp=$(TZ="America/New_York" date '+%Y-%m-%d %H:%M:%S %Z')
+timestamp_ny=$(TZ="America/New_York" date '+%Y-%m-%d %H:%M:%S')
+timestamp_my=$(TZ="Asia/Kuala_Lumpur" date '+%Y-%m-%d %H:%M:%S')
 
 # ----------------------------
 # Process all currencies
@@ -198,10 +189,17 @@ for currency in "${CURRENCIES[@]}"; do
     unit_tola=$(printf "%.2f" "$(echo "$unit_tola_usd / $rate" | bc -l)")
     unit_tael=$(printf "%.2f" "$(echo "$unit_tael_usd / $rate" | bc -l)")
 
-    display_currency_data "$currency" "$timestamp" "$ctousd" "$bid_price" "$ask_price" "$high_price" "$low_price" \
+    display_currency_data "$currency" "$timestamp_ny" "$timestamp_my" "$ctousd" \
+        "$bid_price" "$ask_price" "$high_price" "$low_price" \
         "$unit_ounce" "$unit_gram" "$unit_kilo" "$unit_pennyweight" "$unit_tola" "$unit_tael"
 
-    save_to_file "$currency" "$timestamp" "$ctousd" "$bid_price" "$ask_price" "$high_price" "$low_price" \
+    save_to_file "$currency" "$timestamp_ny" "$timestamp_my" "$ctousd" \
+        "$bid_price" "$ask_price" "$high_price" "$low_price" \
+        "$unit_ounce" "$unit_gram" "$unit_kilo" "$unit_pennyweight" "$unit_tola" "$unit_tael"
+
+    # CORRECTED MySQL INSERT CALL
+    ./gold_scrapper.sh "$currency" "$timestamp_ny" "$timestamp_my" "$ctousd" \
+        "$bid_price" "$ask_price" "$high_price" "$low_price" \
         "$unit_ounce" "$unit_gram" "$unit_kilo" "$unit_pennyweight" "$unit_tola" "$unit_tael"
 
     sleep 1
