@@ -17,7 +17,7 @@ CURRENCIES=("USD" "EUR" "GBP" "AUD" "CNY")
 make_sql_file() {
     local C="$1"
     local SQLFILE="$SQL_DIR/${C}.sql"
-    local LOGFILE="$LOG_DIR/${C}.dat"
+    local LOGFILE="$LOG_DIR/${C}.data"
 
     cat > "$SQLFILE" <<EOF
 SELECT gp.price_timestamp_ny,
