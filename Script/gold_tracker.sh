@@ -6,7 +6,6 @@ cd /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script
 # ============================
 
 PAGE="https://www.kitco.com/charts/gold"
-RAW_FILE="raw.html"
 CURRENCIES=("USD" "EUR" "GBP" "AUD" "CNY")
 DATA_DIR="./gold_data"
 LOG_FILE="$DATA_DIR/gold_tracker.log"
