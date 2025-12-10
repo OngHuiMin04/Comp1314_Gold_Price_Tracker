@@ -199,7 +199,18 @@ for currency in "${CURRENCIES[@]}"; do
         "$bid_price" "$ask_price" "$high_price" "$low_price" \
         "$unit_ounce" "$unit_gram" "$unit_kilo" "$unit_pennyweight" "$unit_tola" "$unit_tael"
 
+    # =====================================================
+    # PREVENT BAD DATA from entering MySQL
+    # =====================================================
+    if [[ -z "$bid_price" || "$bid_price" == "0.00" || "$ask_price" == "0.00" ]]; then
+        log_message "SKIPPED $currency — extractor returned invalid values"
+        continue
+    fi
+
+
+    # =====================================================
     # CORRECTED MySQL INSERT CALL
+    # =====================================================
     ./gold_scrapper.sh "$currency" "$timestamp_ny" "$timestamp_my" "$ctousd" \
         "$bid_price" "$ask_price" "$high_price" "$low_price" \
         "$unit_ounce" "$unit_gram" "$unit_kilo" "$unit_pennyweight" "$unit_tola" "$unit_tael"

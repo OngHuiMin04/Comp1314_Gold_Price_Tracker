@@ -34,6 +34,19 @@ unit_tael="${14:-0}"
 mysql_cmd=(mysql -u "$DB_USER" -D "$DB")
 
 # =======================================================
+# BLOCK BAD INSERTS
+# =======================================================
+if [ "$bid_price" = "0" ] || [ "$ask_price" = "0" ]; then
+    echo "SKIPPED INSERT — Invalid (0) price for $currency" >> ./log/scrapper.log
+    exit 0
+fi
+
+if [ "$timestamp_ny" = "2000-01-01 00:00:00" ]; then
+    echo "SKIPPED INSERT — Missing timestamp for $currency" >> ./log/scrapper.log
+    exit 0
+fi
+
+# =======================================================
 # 1. INSERT OR UPDATE CURRENCY
 # =======================================================
 "${mysql_cmd[@]}" -e "
@@ -87,3 +100,8 @@ INSERT INTO unit_prices (
 INSERT INTO logs (currency_id, gold_price_id, message)
 VALUES ($currency_id, $gold_price_id, 'Inserted by tracker');
 "
+
+# =======================================================
+# FINAL SCRAPER MESSAGE
+# =======================================================
+echo "Scrapper completed successfully → $currency | NY=$timestamp_ny | MY=$timestamp_my" >> ./log/scrapper.log
