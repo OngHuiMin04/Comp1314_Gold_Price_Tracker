@@ -1,4 +1,4 @@
-SELECT gp.price_timestamp_ny,
+SELECT gp.script_timestamp_my,
        gp.bid_price,
        gp.ask_price,
        gp.high_price,
