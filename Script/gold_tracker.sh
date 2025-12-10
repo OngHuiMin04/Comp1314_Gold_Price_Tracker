@@ -1,4 +1,6 @@
 #!/bin/bash
+# ALWAYS switch to Script folder (IMPORTANT for cron)
+cd /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script
 # ============================
 # GOLD PRICE TRACKER (RAW HTML)
 # ============================
