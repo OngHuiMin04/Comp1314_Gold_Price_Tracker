@@ -1,6 +1,9 @@
 #!/bin/bash
+# ALWAYS switch to Script folder (IMPORTANT for cron)
+cd /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script
+
 # =======================================================
-# GOLD SCRAPER
+# GOLD TRACKER (MySQL INSERT)
 # =======================================================
 
 set -eo pipefail
@@ -63,7 +66,7 @@ SELECT LAST_INSERT_ID();
 ")
 
 # =======================================================
-# 3. ALWAYS INSERT INTO unit_prices
+# 3. INSERT INTO unit_prices
 # =======================================================
 "${mysql_cmd[@]}" -e "
 INSERT INTO unit_prices (
@@ -78,7 +81,7 @@ INSERT INTO unit_prices (
 "
 
 # =======================================================
-# 4. INSERT LOG
+# 4. INSERT INTO LOGS
 # =======================================================
 "${mysql_cmd[@]}" -e "
 INSERT INTO logs (currency_id, gold_price_id, message)
