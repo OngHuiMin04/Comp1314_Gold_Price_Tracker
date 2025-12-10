@@ -1,4 +1,6 @@
 #!/bin/bash
+# ALWAYS switch to Script folder (IMPORTANT for cron)
+cd /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script
 DB="goldtracker"
 DB_USER="root"
 PLOT_DIR="./plots"
