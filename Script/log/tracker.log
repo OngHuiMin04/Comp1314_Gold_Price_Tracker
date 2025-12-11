@@ -758,3 +758,98 @@ GBP: 8 records
 AUD: 8 records
 CNY: 8 records
 Gold price tracker completed successfully
+Starting gold tracker...
+==========================================
+ GOLD PRICE - USD
+==========================================
+Bid Price          : 4215.00
+Ask Price          : 4217.00
+High Price         : 4248.70
+Low Price          : 4203.70
+--- Price Per Unit ---
+Ounce              : 4215.00
+Gram               : 135.52
+Kilo               : 135517.47
+Pennyweight        : 210.75
+Tola               : 1580.63
+Tael               : 5122.40
+Data Time          : 2025-12-11 03:02:02
+Script Run         : 2025-12-11 16:02:02
+------------------------------------------
+==========================================
+ GOLD PRICE - EUR
+==========================================
+Bid Price          : 3605.51
+Ask Price          : 3607.22
+High Price         : 3634.34
+Low Price          : 3595.84
+--- Price Per Unit ---
+Ounce              : 3605.51
+Gram               : 115.92
+Kilo               : 115921.64
+Pennyweight        : 180.28
+Tola               : 1352.07
+Tael               : 4381.70
+Data Time          : 2025-12-11 03:02:02
+Script Run         : 2025-12-11 16:02:02
+------------------------------------------
+==========================================
+ GOLD PRICE - GBP
+==========================================
+Bid Price          : 3153.45
+Ask Price          : 3154.95
+High Price         : 3178.66
+Low Price          : 3145.00
+--- Price Per Unit ---
+Ounce              : 3153.45
+Gram               : 101.39
+Kilo               : 101387.40
+Pennyweight        : 157.67
+Tola               : 1182.55
+Tael               : 3832.32
+Data Time          : 2025-12-11 03:02:02
+Script Run         : 2025-12-11 16:02:02
+------------------------------------------
+==========================================
+ GOLD PRICE - AUD
+==========================================
+Bid Price          : 6345.89
+Ask Price          : 6348.90
+High Price         : 6396.63
+Low Price          : 6328.88
+--- Price Per Unit ---
+Ounce              : 6345.89
+Gram               : 204.03
+Kilo               : 204028.33
+Pennyweight        : 317.29
+Tola               : 2379.72
+Tael               : 7712.03
+Data Time          : 2025-12-11 03:02:02
+Script Run         : 2025-12-11 16:02:02
+------------------------------------------
+==========================================
+ GOLD PRICE - CNY
+==========================================
+Bid Price          : 29756.21
+Ask Price          : 29770.33
+High Price         : 29994.12
+Low Price          : 29676.44
+--- Price Per Unit ---
+Ounce              : 29756.21
+Gram               : 956.72
+Kilo               : 956699.13
+Pennyweight        : 1487.81
+Tola               : 11158.62
+Tael               : 36162.10
+Data Time          : 2025-12-11 03:02:02
+Script Run         : 2025-12-11 16:02:02
+------------------------------------------
+
+SUMMARY REPORT
+==============
+USD: 9 records
+EUR: 9 records
+GBP: 9 records
+AUD: 9 records
+CNY: 9 records
+Gold price tracker completed successfully
