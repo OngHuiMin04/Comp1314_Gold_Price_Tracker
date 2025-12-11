@@ -28,3 +28,9 @@ Scrapper completed successfully → EUR | NY=2025-12-10 23:02:03 | MY=2025-12-11
 Scrapper completed successfully → GBP | NY=2025-12-10 23:02:03 | MY=2025-12-11 12:02:03
 Scrapper completed successfully → AUD | NY=2025-12-10 23:02:03 | MY=2025-12-11 12:02:03
 Scrapper completed successfully → CNY | NY=2025-12-10 23:02:03 | MY=2025-12-11 12:02:03
+SKIPPED INSERT — Invalid (0) price for USD
+Scrapper completed successfully → USD | NY=2025-12-11 00:02:03 | MY=2025-12-11 13:02:03
+Scrapper completed successfully → EUR | NY=2025-12-11 00:02:03 | MY=2025-12-11 13:02:03
+Scrapper completed successfully → GBP | NY=2025-12-11 00:02:03 | MY=2025-12-11 13:02:03
+Scrapper completed successfully → AUD | NY=2025-12-11 00:02:03 | MY=2025-12-11 13:02:03
+Scrapper completed successfully → CNY | NY=2025-12-11 00:02:03 | MY=2025-12-11 13:02:03
