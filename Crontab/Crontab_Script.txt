@@ -1,0 +1,16 @@
+# ────────────────────────────────────────────
+# Run gold_scrapper.sh every hour at minute 00
+# ────────────────────────────────────────────
+0 * * * * cd "/mnt/c/Users/Amanda Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script" && ./gold_scrapper.sh >> "/m>
+
+# ────────────────────────────────────────────
+# Run gold_tracker.sh every hour at minute 02
+# ────────────────────────────────────────────
+2 * * * * cd /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script && ./gold_tracker.sh >> /mnt/>
+
+# ────────────────────────────────────────────
+# Run plot_gold.sh every hour at minute 05
+# ────────────────────────────────────────────
+5 * * * * cd /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script && ./plot_gold.sh >> /mnt/c/U>
+
+
