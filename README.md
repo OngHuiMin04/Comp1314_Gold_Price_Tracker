@@ -133,19 +133,6 @@ This script:
 
 ---
 
-### Step 2: Insert Data into MySQL
-```bash
-chmod +x gold_scrapper.sh
-./gold_scrapper.sh
-```
-This script:
-
-- Inserts cleaned data into MySQL
-- Prevents invalid or empty inserts
-- Records logs for each execution
-
----
-
 ### Step 3: Generate Plots
 ```bash
 chmod +x plot_gold.sh
