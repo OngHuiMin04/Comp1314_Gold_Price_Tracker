@@ -508,3 +508,27 @@ Scrapper completed successfully → EUR | NY=2025-12-14 08:02:03 | MY=2025-12-14
 Scrapper completed successfully → GBP | NY=2025-12-14 08:02:03 | MY=2025-12-14 21:02:03
 Scrapper completed successfully → AUD | NY=2025-12-14 08:02:03 | MY=2025-12-14 21:02:03
 Scrapper completed successfully → CNY | NY=2025-12-14 08:02:03 | MY=2025-12-14 21:02:03
+SKIPPED INSERT — Invalid (0) price for USD
+Scrapper completed successfully → USD | NY=2025-12-14 09:02:03 | MY=2025-12-14 22:02:03
+Scrapper completed successfully → EUR | NY=2025-12-14 09:02:03 | MY=2025-12-14 22:02:03
+Scrapper completed successfully → GBP | NY=2025-12-14 09:02:03 | MY=2025-12-14 22:02:03
+Scrapper completed successfully → AUD | NY=2025-12-14 09:02:03 | MY=2025-12-14 22:02:03
+Scrapper completed successfully → CNY | NY=2025-12-14 09:02:03 | MY=2025-12-14 22:02:03
+SKIPPED INSERT — Invalid (0) price for USD
+Scrapper completed successfully → USD | NY=2025-12-14 10:02:02 | MY=2025-12-14 23:02:02
+Scrapper completed successfully → EUR | NY=2025-12-14 10:02:02 | MY=2025-12-14 23:02:02
+Scrapper completed successfully → GBP | NY=2025-12-14 10:02:02 | MY=2025-12-14 23:02:02
+Scrapper completed successfully → AUD | NY=2025-12-14 10:02:02 | MY=2025-12-14 23:02:02
+Scrapper completed successfully → CNY | NY=2025-12-14 10:02:02 | MY=2025-12-14 23:02:02
+SKIPPED INSERT — Invalid (0) price for USD
+Scrapper completed successfully → USD | NY=2025-12-14 11:02:03 | MY=2025-12-15 00:02:03
+Scrapper completed successfully → EUR | NY=2025-12-14 11:02:03 | MY=2025-12-15 00:02:03
+Scrapper completed successfully → GBP | NY=2025-12-14 11:02:03 | MY=2025-12-15 00:02:03
+Scrapper completed successfully → AUD | NY=2025-12-14 11:02:03 | MY=2025-12-15 00:02:03
+Scrapper completed successfully → CNY | NY=2025-12-14 11:02:03 | MY=2025-12-15 00:02:03
+SKIPPED INSERT — Invalid (0) price for USD
+Scrapper completed successfully → USD | NY=2025-12-14 12:02:02 | MY=2025-12-15 01:02:02
+Scrapper completed successfully → EUR | NY=2025-12-14 12:02:02 | MY=2025-12-15 01:02:02
+Scrapper completed successfully → GBP | NY=2025-12-14 12:02:02 | MY=2025-12-15 01:02:02
+Scrapper completed successfully → AUD | NY=2025-12-14 12:02:02 | MY=2025-12-15 01:02:02
+Scrapper completed successfully → CNY | NY=2025-12-14 12:02:02 | MY=2025-12-15 01:02:02

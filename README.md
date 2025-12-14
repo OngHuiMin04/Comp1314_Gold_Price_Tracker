@@ -41,6 +41,11 @@ Comp1314_Gold_Price_Tracker/
 │
 ├── SQL/
 │ └── goldtracker_schema.sql # MySQL database schema
+│ ├── goldtracker_dump.sql
+│ ├── currencies.sql
+│ ├── gold_prices.sql
+│ ├── unit_prices.sql
+│ ├── logs.sql
 │
 ├── ERD Diagram/
 │ └── goldtracker_erd.pdf # Database ERD
