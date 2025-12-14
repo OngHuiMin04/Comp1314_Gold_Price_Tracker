@@ -152,8 +152,40 @@ To automate hourly data collection:
 crontab -e
 
 Add the following line:
-0 * * * * /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/gold_tracker.sh
-This allows the tracker to run automatically every hour.
+# Gold Price Tracker – Weekday automation only (Market open)
+0 * * * 1-5 /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/gold_tracker.sh >> /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/log/tracker.log 2>&1
+
+3 * * * 1-5 /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/gold_scrapper.sh >> /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/log/scrapper.log 2>&1
+
+5 * * * 1-5 /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/plot_gold.sh >> /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/log/plot.log 2>&1
+
+
+### Execution Schedule
+
+- **Minute 00** → `gold_tracker.sh`  
+  Scrapes live gold price data and prepares cleaned output.
+
+- **Minute 03** → `gold_scrapper.sh`  
+  Inserts processed gold price data into the MySQL database.
+
+- **Minute 05** → `plot_gold.sh`  
+  Generates updated plots from historical data.
+
+This staged approach ensures that:
+- Data scraping completes before database insertion
+- Database records exist before plot generation
+- Plots always reflect the most recent stored data
+
+---
+
+## Weekend Market Closure Handling
+The cron schedule is restricted to Monday–Friday (1–5) only.
+
+- No new data is collected on Saturday and Sunday
+- Existing data remains unchanged during market closure
+- Plots continue to reflect the last available weekday prices
+
+This behavior mirrors real-world gold market conditions.
 
 ## Error Handling
 The scripts handle:
@@ -162,7 +194,7 @@ The scripts handle:
 - Missing or zero price values
 - Invalid SQL inserts
 
-Errors are logged without stopping the entire system.
+Errors are logged without stopping the entire system. 
 
 ## Version Control
 - All scripts are managed using GitHub
