@@ -152,7 +152,6 @@ To automate hourly data collection:
 crontab -e
 
 Add the following line:
-# Gold Price Tracker – Weekday automation only (Market open)
 0 * * * 1-5 /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/gold_tracker.sh >> /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/log/tracker.log 2>&1
 
 3 * * * 1-5 /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/gold_scrapper.sh >> /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/log/scrapper.log 2>&1
