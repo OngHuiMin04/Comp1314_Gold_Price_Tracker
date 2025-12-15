@@ -28,7 +28,7 @@ CREATE TABLE `currencies` (
   `currency_exchange` decimal(20,10) DEFAULT NULL,
   PRIMARY KEY (`currencies_id`),
   UNIQUE KEY `currency_name` (`currency_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=441 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=516 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -37,7 +37,7 @@ CREATE TABLE `currencies` (
 
 LOCK TABLES `currencies` WRITE;
 /*!40000 ALTER TABLE `currencies` DISABLE KEYS */;
-INSERT INTO `currencies` VALUES (1,'USD',1.0000000000),(2,'EUR',0.8519500000),(3,'GBP',0.7480500000),(4,'AUD',1.5033500000),(5,'CNY',7.0547500000);
+INSERT INTO `currencies` VALUES (1,'USD',1.0000000000),(2,'EUR',0.8522500000),(3,'GBP',0.7482500000),(4,'AUD',1.5041000000),(5,'CNY',7.0485000000);
 /*!40000 ALTER TABLE `currencies` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-12-15  0:27:06
+-- Dump completed on 2025-12-15 15:22:25
