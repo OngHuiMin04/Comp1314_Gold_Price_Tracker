@@ -157,13 +157,16 @@ Script/plots/
 To automate hourly data collection:
 crontab -e
 
+sudo service cron start: Start crontab
+sudo service cron stop: Stop crontab
+sudo service cron status: Check status
+
 Add the following line:
 0 * * * 1-5 /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/gold_tracker.sh >> /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/log/tracker.log 2>&1
 
 3 * * * 1-5 /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/gold_scrapper.sh >> /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/log/scrapper.log 2>&1
 
-5 * * * 1-5 /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/plot_gold.sh >> /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/log/plot.log 2>&1
-
+5 * * * 1-5 /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/plot_gold.sh >> /mnt/c/Users/Amanda\ Ong/Documents/Github/Comp1314_Gold_Price_Tracker/Script/log/plot.log 2>&
 
 ### Execution Schedule
 
