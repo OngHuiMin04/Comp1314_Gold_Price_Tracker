@@ -27,34 +27,33 @@ The project demonstrates:
 ---
 
 ## Project Structure
+```text
 Comp1314_Gold_Price_Tracker/
 │
 ├── Script/
-│ ├── gold_tracker.sh # Main tracker (scraping + CSV output)
-│ ├── gold_scrapper.sh # Insert data into MySQL
-│ ├── plot_gold.sh # Generate plots using Gnuplot
-│ ├── raw.html # Raw HTML downloaded from Kitco
-│ ├── gold_data/ # CSV historical data
-│ ├── plots/ # Generated PNG plots
-│ ├── log/ # Log files
-│ └── sql_queries/ # Auto-generated SQL queries
+│   ├── gold_tracker.sh       # Main tracker (scraping + CSV output)
+│   ├── gold_scrapper.sh      # Insert data into MySQL
+│   ├── plot_gold.sh          # Generate plots using Gnuplot
+│   ├── raw.html              # Raw HTML downloaded from Kitco
+│   ├── gold_data/            # CSV historical data
+│   ├── plots/                # Generated PNG plots
+│   ├── log/                  # Log files
+│   └── sql_queries/          # Auto-generated SQL queries
 │
 ├── SQL/
-│ └── goldtracker_schema.sql # MySQL database schema
-│ ├── goldtracker_dump.sql
-│ ├── currencies.sql
-│ ├── gold_prices.sql
-│ ├── unit_prices.sql
-│ ├── logs.sql
+│   ├── goldtracker_schema.sql
+│   ├── goldtracker_dump.sql
+│   ├── currencies.sql
+│   ├── gold_prices.sql
+│   ├── unit_prices.sql
+│   └── logs.sql
 │
 ├── ERD Diagram/
-│ └── goldtracker_erd.pdf # Database ERD
+│   └── goldtracker_erd.pdf
 │
 ├── Crontab_Script
-│
 └── README.md
-
----
+```
 
 ## Technologies Used
 - **Operating System**: Windows with WSL (Ubuntu)
