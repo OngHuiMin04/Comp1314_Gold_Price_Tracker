@@ -52,6 +52,8 @@ Comp1314_Gold_Price_Tracker/
 │   └── goldtracker_erd.pdf
 │
 ├── Crontab_Script
+├── Instruction Manual
+├── Documentation
 └── README.md
 ```
 
